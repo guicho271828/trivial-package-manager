@@ -1,5 +1,8 @@
 
-# Trivial-Package-Manager - ASDF extension to instruct the binary package installation from distro-specific package manager.
+# Trivial-Package-Manager
+
+This ASDF extension auto-detects the distro-specific package manager and
+guides the user how to install the binary package (or may even do it by itself, asking the user of sudo password etc.).
 
 ## Usage
 
