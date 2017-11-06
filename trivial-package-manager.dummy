@@ -1,0 +1,8 @@
+
+(defsystem trivial-package-manager.dummy
+  :author "Masataro Asai"
+  :mailto "guicho2.71828@gmail.com"
+  :description "Test system of trivial-package-manager"
+  :license "LLGPL"
+  :defsystem-depends-on (:trivial-package-manager)
+  :components ((:os-packaged-program "gnome-mines" :apt "gnome-mines")))
