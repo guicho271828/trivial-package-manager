@@ -5,7 +5,7 @@
 
 (in-package :cl-user)
 (defpackage trivial-package-manager
-  (:use :cl :trivia :alexandria :iterate)
+  (:use :cl :alexandria)
   (:export
    #:ensure-program
    #:ensure-library
