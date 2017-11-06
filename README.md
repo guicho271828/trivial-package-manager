@@ -27,8 +27,11 @@ install the binary package.
     
      (ensure-program "gnome-mines" :apt "gnome-mines")
      (ensure-program "gnome-mines" :apt '("gnome-mines")) ; both are ok
-     (ensure-library "libcurl" :apt "libcurl4-openssl-dev")
-     (ensure-library "libcurl" :apt '("libcurl4-openssl-dev")) ; both are ok
+     (ensure-library "libcurl" :apt "libcurl4-openssl-dev"
+                               :dnf "curl"
+                               :yum "curl"
+                               :pacman "curl"
+                               :brew "curl")
 
 ## Dependencies
 This library is at least tested on implementation listed below:
