@@ -85,13 +85,13 @@ Managers are detected simply by `which` command."
     #+unix
     ((which "apt-get") (%run (sudo `("apt-get" "install" "-y" ,@(ensure-list apt)))))
     #+unix
-    ((which "dnf") (%run (sudo `( "dnf" "install" "-y" ,@(ensure-list dnf)))))
+    ((which "dnf") (%run (sudo `("dnf" "install" "-y" ,@(ensure-list dnf)))))
     #+unix
-    ((which "yum") (%run (sudo `( "yum" "install" "-y" ,@(ensure-list yum)))))
+    ((which "yum") (%run (sudo `("yum" "install" "-y" ,@(ensure-list yum)))))
     #+unix
-    ((which "yaourt") (%run (sudo `( "yaourt" "-S" "--noconfirm" ,@(ensure-list yaourt)))))
+    ((which "yaourt") (%run (sudo `("yaourt" "-S" "--noconfirm" ,@(ensure-list yaourt)))))
     #+unix
-    ((which "pacman") (%run (sudo `( "packman" "-S" "--noconfirm" ,@(ensure-list pacman)))))
+    ((which "pacman") (%run (sudo `("packman" "-S" "--noconfirm" ,@(ensure-list pacman)))))
     #+(or unix osx)
     ((which "brew") (%run `("brew" "install" ,@(ensure-list brew))))
     #+windows
