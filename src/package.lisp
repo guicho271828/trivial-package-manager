@@ -9,7 +9,9 @@
   (:export
    #:ensure-program
    #:ensure-library
-   #:do-install))
+   #:do-install
+   #:which
+   #:pkg-config))
 (in-package :trivial-package-manager)
 
 ;; blah blah blah.
