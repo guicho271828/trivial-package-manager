@@ -33,6 +33,24 @@ install the binary package.
                                :pacman "curl"
                                :brew "curl")
 
+## Using it in the asdf system
+
+ASDF integration is not included yet, but you can do this:
+
+```common-lisp
+(defsystem trivial-package-manager.dummy
+  :author "Masataro Asai"
+  :mailto "guicho2.71828@gmail.com"
+  :description "Test system of trivial-package-manager"
+  :license "LLGPL"
+  :defsystem-depends-on (:trivial-package-manager)
+  :perform (load-op :before (op c)
+                    (uiop:symbol-call :trivial-package-manager
+                                      :ensure-program
+                                      "gnome-mines" :apt "gnome-mines")))
+```
+
+
 ## Dependencies
 This library is at least tested on implementation listed below:
 

@@ -7,8 +7,7 @@
 (defpackage :trivial-package-manager.test
   (:use :cl
         :trivial-package-manager
-        :fiveam
-        :trivia :alexandria :iterate))
+        :fiveam :alexandria))
 (in-package :trivial-package-manager.test)
 
 
@@ -19,7 +18,6 @@
 ;; run test with (run! test-name) 
 
 (test trivial-package-manager
-
   )
 
 
