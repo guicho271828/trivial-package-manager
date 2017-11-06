@@ -31,9 +31,12 @@
     (uiop:run-program `("pkg-config" ,(string-downcase (string name)))
                       :ignore-error-status t))))
 
-(defun sudo ()
-  (cond ((and (which "gksudo") (uiop:getenv "DISPLAY")) "gksudo")
-        ((which "sudo") "sudo")
+(defun sudo (commands)
+  (cond ((and (which "gksudo") (uiop:getenv "DISPLAY"))
+         `("gksudo" ;; "-d" ,(format nil "Installing packages via: ~a" commands)
+           ,(format nil "~{~a ~}" commands)))
+        ((which "sudo")
+         `("sudo" ,(format nil "~{~a ~}" commands)))
         (t
          (error "you don't have sudo right?"))))
 
@@ -67,24 +70,32 @@ Example:
       (format t "~&~a is already installed.~%" program)
       (apply #'do-install rest)))
 
+(defun %run (args)
+  "Simple wrapper for run-program, input/error/output are inherited."
+  (uiop:run-program args
+                    :output :interactive
+                    :error-output :interactive
+                    :input :interactive))
+
 (defun do-install (&key apt dnf yum pacman yaourt brew choco)
   "Install the specified packages when the corresponding package manager is present in the system.
 Managers are detected simply by `which` command."
+  (declare (ignorable apt dnf yum pacman yaourt brew choco))
   (cond
     #+unix
-    ((which "apt") (uiop:run-program `(,(sudo) "apt-get" "install" "-y" ,@(ensure-list apt)) :output t :error-output t :input t))
+    ((which "apt") (%run (sudo `("apt-get" "install" "-y" ,@(ensure-list apt)))))
     #+unix
-    ((which "dnf") (uiop:run-program `(,(sudo) "dnf" "install" "-y" ,@(ensure-list dnf)) :output t :error-output t :input t))
+    ((which "dnf") (%run (sudo `( "dnf" "install" "-y" ,@(ensure-list dnf)))))
     #+unix
-    ((which "yum") (uiop:run-program `(,(sudo) "yum" "install" "-y" ,@(ensure-list yum)) :output t :error-output t :input t))
+    ((which "yum") (%run (sudo `( "yum" "install" "-y" ,@(ensure-list yum)))))
     #+unix
-    ((which "yaourt") (uiop:run-program `(,(sudo) "yaourt" "-S" "--noconfirm" ,@(ensure-list yaourt)) :output t :error-output t :input t))
+    ((which "yaourt") (%run (sudo `( "yaourt" "-S" "--noconfirm" ,@(ensure-list yaourt)))))
     #+unix
-    ((which "pacman") (uiop:run-program `(,(sudo) "packman" "-S" "--noconfirm" ,@(ensure-list pacman)) :output t :error-output t :input t))
+    ((which "pacman") (%run (sudo `( "packman" "-S" "--noconfirm" ,@(ensure-list pacman)))))
     #+(or unix osx)
-    ((which "brew") (uiop:run-program `("brew" "install" ,@(ensure-list brew)) :output t :error-output t :input t))
+    ((which "brew") (%run `("brew" "install" ,@(ensure-list brew))))
     #+windows
-    ((which "choco") (uiop:run-program `("choco" "install" ,@(ensure-list choco)) :output t :error-output t :input t))
+    ((which "choco") (%run `("choco" "install" ,@(ensure-list choco))))
     (t (error "none of the installation options are available! Supported packaging systems:~%~a"
               '(:apt :dnf :yum :pacman :yaourt :brew :choco)))))
 
