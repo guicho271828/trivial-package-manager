@@ -67,7 +67,7 @@ Example:
 "
   (declare (ignorable apt dnf yum pacman yaourt brew choco))
   (if (pkg-config library)
-      (format t "~&~a is already installed.~%" program)
+      (format t "~&~a is already installed.~%" library)
       (apply #'do-install rest)))
 
 (defun %run (args)
