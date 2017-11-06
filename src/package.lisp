@@ -83,7 +83,7 @@ Managers are detected simply by `which` command."
   (declare (ignorable apt dnf yum pacman yaourt brew choco))
   (cond
     #+unix
-    ((which "apt") (%run (sudo `("apt-get" "install" "-y" ,@(ensure-list apt)))))
+    ((which "apt-get") (%run (sudo `("apt-get" "install" "-y" ,@(ensure-list apt)))))
     #+unix
     ((which "dnf") (%run (sudo `( "dnf" "install" "-y" ,@(ensure-list dnf)))))
     #+unix
