@@ -48,8 +48,9 @@ Example:
  (ensure-program \"gnome-mines\" :apt '(\"gnome-mines\")) ; both are ok
 "
   (declare (ignorable apt dnf yum pacman yaourt brew choco))
-  (unless (which program)
-    (apply #'do-install rest)))
+  (if (which program)
+      (format t "~&~a is already installed.~%" program)
+      (apply #'do-install rest)))
 
 (defun ensure-library (library &rest rest &key apt dnf yum pacman yaourt brew choco)
   "Library is a shared library name to be checked by PKG-CONFIG command.
@@ -62,8 +63,9 @@ Example:
  (ensure-library \"libcurl\" :apt '(\"libcurl4-openssl-dev\")) ; both are ok
 "
   (declare (ignorable apt dnf yum pacman yaourt brew choco))
-  (unless (pkg-config library)
-    (apply #'do-install rest)))
+  (if (pkg-config library)
+      (format t "~&~a is already installed.~%" program)
+      (apply #'do-install rest)))
 
 (defun do-install (&key apt dnf yum pacman yaourt brew choco)
   "Install the specified packages when the corresponding package manager is present in the system.
