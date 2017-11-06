@@ -8,9 +8,9 @@ install the binary package.
 
     Package trivial-package-manager:
     
-    ensure-program (program &key apt dnf yum pacman yaourt brew choco)
-    ensure-library (library &key apt dnf yum pacman yaourt brew choco)
-    do-install             (&key apt dnf yum pacman yaourt brew choco)
+    ensure-program (program &key apt dnf yum pacman yaourt brew choco from-source)
+    ensure-library (library &key apt dnf yum pacman yaourt brew choco from-source)
+    do-install             (&key apt dnf yum pacman yaourt brew choco from-source)
 
     PROGRAM is a program name (string) to be checked by `which` command.
     LIBRARY is a library name (string) to be checked by `pkg-config` command. Includes "lib" i.e. libcurl.
@@ -23,6 +23,11 @@ install the binary package.
     
     It uses `gksudo` or `sudo` when necessary, and may ask the user of passwords.
     
+    If none of the package managers are available / when the package is missing (e.g. older distro),
+    FROM-SOURCE argument can specify the shell command for fetching/building/installing the program from
+    the source code. The command is executed in the *default-pathname-defaults*,
+    so care must be taken to bind the appropriate value to the variable.
+
     Example:
     
      (ensure-program "gnome-mines" :apt "gnome-mines")

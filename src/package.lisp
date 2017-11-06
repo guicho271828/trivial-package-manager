@@ -40,32 +40,42 @@
         (t
          (error "you don't have sudo right?"))))
 
-(defun ensure-program (program &rest rest &key apt dnf yum pacman yaourt brew choco)
+(defun ensure-program (program &rest rest &key apt dnf yum pacman yaourt brew choco from-source)
   "PROGRAM is a program name to be checked by WHICH command.
 Each keyword argument specifies the package names to be passed on to the corresponding package manager.
 The value of each argument can be a string or a list of strings.
+
+If none of the package managers are available / when the package is missing (e.g. older distro),
+FROM-SOURCE argument can specify the shell command for fetching/building/installing the program from
+the source code. The command is executed in the *default-pathname-defaults*,
+ so care must be taken to bind the appropriate value to the variable.
 
 Example:
 
  (ensure-program \"gnome-mines\" :apt \"gnome-mines\")
  (ensure-program \"gnome-mines\" :apt '(\"gnome-mines\")) ; both are ok
 "
-  (declare (ignorable apt dnf yum pacman yaourt brew choco))
+  (declare (ignorable apt dnf yum pacman yaourt brew choco from-source))
   (if (which program)
       (format t "~&~a is already installed.~%" program)
       (apply #'do-install rest)))
 
-(defun ensure-library (library &rest rest &key apt dnf yum pacman yaourt brew choco)
+(defun ensure-library (library &rest rest &key apt dnf yum pacman yaourt brew choco from-source)
   "Library is a shared library name to be checked by PKG-CONFIG command.
 Each keyword argument specifies the package names to be passed on to the corresponding package manager.
 The value of each argument can be a string or a list of strings.
+
+If none of the package managers are available / when the package is missing (e.g. older distro),
+FROM-SOURCE argument can specify the shell command for fetching/building/installing the program from
+the source code. The command is executed in the *default-pathname-defaults*,
+ so care must be taken to bind the appropriate value to the variable.
 
 Example:
 
  (ensure-library \"libcurl\" :apt \"libcurl4-openssl-dev\")
  (ensure-library \"libcurl\" :apt '(\"libcurl4-openssl-dev\")) ; both are ok
 "
-  (declare (ignorable apt dnf yum pacman yaourt brew choco))
+  (declare (ignorable apt dnf yum pacman yaourt brew choco from-source))
   (if (pkg-config library)
       (format t "~&~a is already installed.~%" library)
       (apply #'do-install rest)))
@@ -77,10 +87,10 @@ Example:
                     :error-output :interactive
                     :input :interactive))
 
-(defun do-install (&key apt dnf yum pacman yaourt brew choco)
+(defun do-install (&key apt dnf yum pacman yaourt brew choco from-source)
   "Install the specified packages when the corresponding package manager is present in the system.
 Managers are detected simply by `which` command."
-  (declare (ignorable apt dnf yum pacman yaourt brew choco))
+  (declare (ignorable apt dnf yum pacman yaourt brew choco from-source))
   (macrolet ((try-return (form)
                `(handler-case (return ,form)
                   (uiop:subprocess-error (c)
@@ -109,6 +119,8 @@ Managers are detected simply by `which` command."
       #+windows
       (when (and choco (which "choco"))
         (try-return (%run `("choco" "install" ,@(ensure-list choco)))))
+      (when from-source
+        (try-return (%run `("sh" "-c" ,@(ensure-list brew)))))
       (t (error "none of the installation options are available! Supported packaging systems:~%~a"
                 '(:apt :dnf :yum :pacman :yaourt :brew :choco))))))
 
