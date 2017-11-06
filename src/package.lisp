@@ -54,19 +54,19 @@
 (defun do-install (&key apt dnf yum pacman yaourt brew choco)
   (cond
     #+unix
-    ((which "apt") (uiop:run-program `(,(sudo) "apt-get" "install" "-y" ,@apt) :output t :error-output t :input t))
+    ((which "apt") (uiop:run-program `(,(sudo) "apt-get" "install" "-y" ,@(ensure-list apt)) :output t :error-output t :input t))
     #+unix
-    ((which "dnf") (uiop:run-program `(,(sudo) "dnf" "install" "-y" ,@dnf) :output t :error-output t :input t))
+    ((which "dnf") (uiop:run-program `(,(sudo) "dnf" "install" "-y" ,@(ensure-list dnf)) :output t :error-output t :input t))
     #+unix
-    ((which "yum") (uiop:run-program `(,(sudo) "yum" "install" "-y" ,@yum) :output t :error-output t :input t))
+    ((which "yum") (uiop:run-program `(,(sudo) "yum" "install" "-y" ,@(ensure-list yum)) :output t :error-output t :input t))
     #+unix
-    ((which "yaourt") (uiop:run-program `(,(sudo) "yaourt" "-S" "--noconfirm" ,@yaourt) :output t :error-output t :input t))
+    ((which "yaourt") (uiop:run-program `(,(sudo) "yaourt" "-S" "--noconfirm" ,@(ensure-list yaourt)) :output t :error-output t :input t))
     #+unix
-    ((which "pacman") (uiop:run-program `(,(sudo) "packman" "-S" "--noconfirm" ,@pacman) :output t :error-output t :input t))
+    ((which "pacman") (uiop:run-program `(,(sudo) "packman" "-S" "--noconfirm" ,@(ensure-list pacman)) :output t :error-output t :input t))
     #+(or unix osx)
-    ((which "brew") (uiop:run-program `("brew" "install" ,@brew) :output t :error-output t :input t))
+    ((which "brew") (uiop:run-program `("brew" "install" ,@(ensure-list brew)) :output t :error-output t :input t))
     #+windows
-    ((which "choco") (uiop:run-program `("choco" "install" ,@choco) :output t :error-output t :input t))
+    ((which "choco") (uiop:run-program `("choco" "install" ,@(ensure-list choco)) :output t :error-output t :input t))
     (t (error "none of the installation options are available! Supported packaging systems:~%~a"
               '(:apt :dnf :yum :pacman :yaourt :brew :choco)))))
 
