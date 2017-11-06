@@ -55,6 +55,7 @@ ASDF integration is not included yet, but you can do this:
 This library is at least tested on implementation listed below:
 
 + SBCL 1.4.0 on X86-64 Linux 4.10.0-38-generic (author's environment)
++ CCL 1.11
 
 Also, it depends on the following libraries:
 
