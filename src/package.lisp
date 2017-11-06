@@ -81,21 +81,34 @@ Example:
   "Install the specified packages when the corresponding package manager is present in the system.
 Managers are detected simply by `which` command."
   (declare (ignorable apt dnf yum pacman yaourt brew choco))
-  (cond
-    #+unix
-    ((which "apt-get") (%run (sudo `("apt-get" "install" "-y" ,@(ensure-list apt)))))
-    #+unix
-    ((which "dnf") (%run (sudo `("dnf" "install" "-y" ,@(ensure-list dnf)))))
-    #+unix
-    ((which "yum") (%run (sudo `("yum" "install" "-y" ,@(ensure-list yum)))))
-    #+unix
-    ((which "yaourt") (%run (sudo `("yaourt" "-S" "--noconfirm" ,@(ensure-list yaourt)))))
-    #+unix
-    ((which "pacman") (%run (sudo `("packman" "-S" "--noconfirm" ,@(ensure-list pacman)))))
-    #+(or unix osx)
-    ((which "brew") (%run `("brew" "install" ,@(ensure-list brew))))
-    #+windows
-    ((which "choco") (%run `("choco" "install" ,@(ensure-list choco))))
-    (t (error "none of the installation options are available! Supported packaging systems:~%~a"
-              '(:apt :dnf :yum :pacman :yaourt :brew :choco)))))
+  (macrolet ((try-return (form)
+               `(handler-case (return ,form)
+                  (uiop:subprocess-error (c)
+                    (warn "Command failed with code ~a: ~a"
+                          (uiop:subprocess-error-code c)
+                          (uiop:subprocess-error-command c))))))
+    (block nil
+      #+unix
+      (when (and apt (which "apt-get"))
+        (try-return (%run (sudo `("apt-get" "install" "-y" ,@(ensure-list apt))))))
+      #+unix
+      (when (and dnf (which "dnf"))
+        (try-return (%run (sudo `("dnf" "install" "-y" ,@(ensure-list dnf))))))
+      #+unix
+      (when (and yum (which "yum"))
+        (try-return (%run (sudo `("yum" "install" "-y" ,@(ensure-list yum))))))
+      #+unix
+      (when (and yaourt (which "yaourt"))
+        (try-return (%run (sudo `("yaourt" "-S" "--noconfirm" ,@(ensure-list yaourt))))))
+      #+unix
+      (when (and pacman (which "pacman"))
+        (try-return (%run (sudo `("packman" "-S" "--noconfirm" ,@(ensure-list pacman))))))
+      #+(or unix dawrin bsd)
+      (when (and brew (which "brew"))
+        (try-return (%run `("brew" "install" ,@(ensure-list brew)))))
+      #+windows
+      (when (and choco (which "choco"))
+        (try-return (%run `("choco" "install" ,@(ensure-list choco)))))
+      (t (error "none of the installation options are available! Supported packaging systems:~%~a"
+                '(:apt :dnf :yum :pacman :yaourt :brew :choco))))))
 
