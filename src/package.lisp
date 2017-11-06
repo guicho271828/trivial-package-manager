@@ -39,19 +39,35 @@
 
 (defun ensure-program (program &rest rest &key apt dnf yum pacman yaourt brew choco)
   "PROGRAM is a program name to be checked by WHICH command.
- Each keyword argument specifies the package names to be passed on to the corresponding package manager."
+Each keyword argument specifies the package names to be passed on to the corresponding package manager.
+The value of each argument can be a string or a list of strings.
+
+Example:
+
+ (ensure-program \"gnome-mines\" :apt \"gnome-mines\")
+ (ensure-program \"gnome-mines\" :apt '(\"gnome-mines\")) ; both are ok
+"
   (declare (ignorable apt dnf yum pacman yaourt brew choco))
   (unless (which program)
     (apply #'do-install rest)))
 
 (defun ensure-library (library &rest rest &key apt dnf yum pacman yaourt brew choco)
   "Library is a shared library name to be checked by PKG-CONFIG command.
- Each keyword argument specifies the package names to be passed on to the corresponding package manager."
+Each keyword argument specifies the package names to be passed on to the corresponding package manager.
+The value of each argument can be a string or a list of strings.
+
+Example:
+
+ (ensure-library \"libcurl\" :apt \"libcurl4-openssl-dev\")
+ (ensure-library \"libcurl\" :apt '(\"libcurl4-openssl-dev\")) ; both are ok
+"
   (declare (ignorable apt dnf yum pacman yaourt brew choco))
-  (unless (pkg-config program)
+  (unless (pkg-config library)
     (apply #'do-install rest)))
 
 (defun do-install (&key apt dnf yum pacman yaourt brew choco)
+  "Install the specified packages when the corresponding package manager is present in the system.
+Managers are detected simply by `which` command."
   (cond
     #+unix
     ((which "apt") (uiop:run-program `(,(sudo) "apt-get" "install" "-y" ,@(ensure-list apt)) :output t :error-output t :input t))

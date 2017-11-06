@@ -1,11 +1,34 @@
 
 # Trivial-Package-Manager
 
-This ASDF extension auto-detects the distro-specific package manager and
-guides the user how to install the binary package (or may even do it by itself, asking the user of sudo password etc.).
+This library provides two simple functions which auto-detects the distro-specific package manager and
+install the binary package.
 
 ## Usage
 
+    Package trivial-package-manager:
+    
+    ensure-program (program &key apt dnf yum pacman yaourt brew choco)
+    ensure-library (library &key apt dnf yum pacman yaourt brew choco)
+    do-install             (&key apt dnf yum pacman yaourt brew choco)
+
+    PROGRAM is a program name (string) to be checked by `which` command.
+    LIBRARY is a program name (string) to be checked by `pkg-config` command.
+
+    Each keyword argument specifies the package names to be passed on to the corresponding package manager.
+    The value of each argument can be a string or a list of strings.
+
+    Specified packages are installed when the program/library is missing.
+    DO-INSTALL installs the packages unconditionally.
+    
+    It uses `gksudo` or `sudo` when necessary, and may ask the user of passwords.
+    
+    Example:
+    
+     (ensure-program "gnome-mines" :apt "gnome-mines")
+     (ensure-program "gnome-mines" :apt '("gnome-mines")) ; both are ok
+     (ensure-library "libcurl" :apt "libcurl4-openssl-dev")
+     (ensure-library "libcurl" :apt '("libcurl4-openssl-dev")) ; both are ok
 
 ## Dependencies
 This library is at least tested on implementation listed below:
@@ -14,12 +37,8 @@ This library is at least tested on implementation listed below:
 
 Also, it depends on the following libraries:
 
-+ trivia :
-    
 + alexandria by *Nikodemus Siivola <nikodemus@sb-studio.net>, and others.* :
     Alexandria is a collection of portable public domain utilities.
-+ iterate by ** :
-    Jonathan Amsterdam's iterator/gatherer/accumulator facility
 
 ## Installation
 

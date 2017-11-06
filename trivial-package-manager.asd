@@ -13,5 +13,5 @@
   :depends-on (:trivia :alexandria :iterate)
   :pathname "src"
   :components ((:file "package"))
-  :description "ASDF extension to instruct the binary package installation from distro-specific package manager."
+  :description "Functions for installing packages from distro-specific package manager."
   :in-order-to ((test-op (test-op :trivial-package-manager.test))))
