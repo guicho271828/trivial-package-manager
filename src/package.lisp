@@ -5,7 +5,11 @@
 
 (in-package :cl-user)
 (defpackage trivial-package-manager
-  (:use :cl :trivia :alexandria :iterate :asdf))
+  (:use :cl :trivia :alexandria :iterate)
+  (:export
+   #:ensure-program
+   #:ensure-library
+   #:do-install))
 (in-package :trivial-package-manager)
 
 ;; blah blah blah.
@@ -27,10 +31,11 @@
     (uiop:run-program `("pkg-config" ,(string-downcase (string name)))
                       :ignore-error-status t))))
 
-(defvar *sudo*
+(defun sudo ()
   (cond ((and (which "gksudo") (uiop:getenv "DISPLAY")) "gksudo")
         ((which "sudo") "sudo")
-        nil))
+        (t
+         (error "you don't have sudo right?"))))
 
 (defun ensure-program (program &rest rest &key apt dnf yum pacman yaourt brew choco)
   "PROGRAM is a program name to be checked by WHICH command.
@@ -49,15 +54,15 @@
 (defun do-install (&key apt dnf yum pacman yaourt brew choco)
   (cond
     #+unix
-    ((which "apt") (uiop:run-program `(,*sudo* "apt-get" "install" "-y" ,@apt) :output t :error-output t :input t))
+    ((which "apt") (uiop:run-program `(,(sudo) "apt-get" "install" "-y" ,@apt) :output t :error-output t :input t))
     #+unix
-    ((which "dnf") (uiop:run-program `(,*sudo* "dnf" "install" "-y" ,@dnf) :output t :error-output t :input t))
+    ((which "dnf") (uiop:run-program `(,(sudo) "dnf" "install" "-y" ,@dnf) :output t :error-output t :input t))
     #+unix
-    ((which "yum") (uiop:run-program `(,*sudo* "yum" "install" "-y" ,@yum) :output t :error-output t :input t))
+    ((which "yum") (uiop:run-program `(,(sudo) "yum" "install" "-y" ,@yum) :output t :error-output t :input t))
     #+unix
-    ((which "yaourt") (uiop:run-program `(,*sudo* "yaourt" "-S" "--noconfirm" ,@yaourt) :output t :error-output t :input t))
+    ((which "yaourt") (uiop:run-program `(,(sudo) "yaourt" "-S" "--noconfirm" ,@yaourt) :output t :error-output t :input t))
     #+unix
-    ((which "pacman") (uiop:run-program `(,*sudo* "packman" "-S" "--noconfirm" ,@pacman) :output t :error-output t :input t))
+    ((which "pacman") (uiop:run-program `(,(sudo) "packman" "-S" "--noconfirm" ,@pacman) :output t :error-output t :input t))
     #+(or unix osx)
     ((which "brew") (uiop:run-program `("brew" "install" ,@brew) :output t :error-output t :input t))
     #+windows
@@ -65,22 +70,3 @@
     (t (error "none of the installation options are available! Supported packaging systems:~%~a"
               '(:apt :dnf :yum :pacman :yaourt :brew :choco)))))
 
-(defmethod perform)
-
-
-
-
-
-
-
-
-
-
-
-
-(setf (find-class 'asdf::cffi-grovel-file) (find-class 'grovel-file))
-
-
-
-
-    
