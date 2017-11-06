@@ -13,7 +13,7 @@ install the binary package.
     do-install             (&key apt dnf yum pacman yaourt brew choco)
 
     PROGRAM is a program name (string) to be checked by `which` command.
-    LIBRARY is a program name (string) to be checked by `pkg-config` command.
+    LIBRARY is a library name (string) to be checked by `pkg-config` command. Includes "lib" i.e. libcurl.
 
     Each keyword argument specifies the package names to be passed on to the corresponding package manager.
     The value of each argument can be a string or a list of strings.
