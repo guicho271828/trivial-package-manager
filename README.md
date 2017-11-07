@@ -1,10 +1,40 @@
 
 # Trivial-Package-Manager
 
-This library provides two simple functions which auto-detects the distro-specific package manager and
-install the binary package.
+This library provides two simple functions for detecting an available package manager and
+install the binary package. Paired with ASDF, it solves the problem of external library dependency.
 
-## Usage
+## Using it in the asdf system
+
+Sophisticated ASDF integration is still on the way, but you can do this, for example:
+
+```common-lisp
+(defsystem cl-sat.minisat
+  :version "0.1"
+  :author "Masataro Asai"
+  :mailto "guicho2.71828@gmail.com"
+  :license "LLGPL"
+  :depends-on (:trivia :alexandria :iterate :cl-sat)
+  :components ((:module "src"
+                        :components
+                        ((:file "package"))))
+  :description "Common Lisp API to minisat"
+  :in-order-to ((test-op (test-op :cl-sat.minisat.test)))
+  :defsystem-depends-on (:trivial-package-manager)
+  :perform
+  (load-op :before (op c)
+           (uiop:symbol-call :trivial-package-manager
+                             :ensure-program
+                             "minisat"
+                             :apt "minisat"
+                             :dnf "minisat2"
+                             :yum "minisat2"
+                             :brew "minisat"
+                             :from-source (format nil "make -C ~a"
+                                                  (asdf:system-source-directory :cl-sat.minisat)))))
+```
+
+## API
 
     Package trivial-package-manager:
     
@@ -38,22 +68,6 @@ install the binary package.
                                :pacman "curl"
                                :brew "curl")
 
-## Using it in the asdf system
-
-ASDF integration is not included yet, but you can do this:
-
-```common-lisp
-(defsystem trivial-package-manager.dummy
-  :author "Masataro Asai"
-  :mailto "guicho2.71828@gmail.com"
-  :description "Test system of trivial-package-manager"
-  :license "LLGPL"
-  :defsystem-depends-on (:trivial-package-manager)
-  :perform (load-op :before (op c)
-                    (uiop:symbol-call :trivial-package-manager
-                                      :ensure-program
-                                      "gnome-mines" :apt "gnome-mines")))
-```
 
 
 ## Dependencies
