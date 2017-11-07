@@ -4,7 +4,7 @@
 This library provides two simple functions for detecting an available package manager and
 install the binary package. Paired with ASDF, it solves the problem of external library dependency.
 
-## Using it in the asdf system
+## Use it in a ASDF system definition
 
 Sophisticated ASDF integration is still on the way, but you can do this, for example:
 
