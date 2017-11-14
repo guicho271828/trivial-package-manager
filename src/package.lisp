@@ -115,13 +115,13 @@ Managers are detected simply by `which` command."
       #+unix
       (when (and pacman (which "pacman"))
         (try-return (%run (sudo `("packman" "-S" "--noconfirm" ,@(ensure-list pacman))))))
-      #+(or unix dawrin)
+      #+(or unix darwin)
       (when (and brew (which "brew"))
         (try-return (%run `("brew" "install" ,@(ensure-list brew)))))
-      #+(or dawrin)
+      #+(or darwin)
       (when (and macports (which "port"))
         (try-return (%run (sudo `("port" "install" ,@(ensure-list macports))))))
-      #+(or dawrin)
+      #+(or darwin)
       (when (and fink (which "fink"))
         (try-return (%run `("fink" "install" ,@(ensure-list fink)))))
       #+windows
