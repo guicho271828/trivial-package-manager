@@ -41,6 +41,7 @@ Sophisticated ASDF integration is still on the way, but you can do this, for exa
     ensure-program (program &key apt dnf yum pacman yaourt brew choco from-source)
     ensure-library (library &key apt dnf yum pacman yaourt brew choco from-source)
     do-install             (&key apt dnf yum pacman yaourt brew choco from-source)
+    browse-package (query-string)
 
     PROGRAM is a program name (string) to be checked by `which` command.
     LIBRARY is a library name (string) to be checked by `pkg-config` command. Includes "lib" i.e. libcurl.

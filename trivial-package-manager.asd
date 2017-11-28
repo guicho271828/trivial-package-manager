@@ -10,7 +10,7 @@
   :author "Masataro Asai"
   :mailto "guicho2.71828@gmail.com"
   :license "LLGPL"
-  :depends-on (:alexandria :trivial-features)
+  :depends-on (:alexandria :trivial-features :trivial-open-browser)
   :pathname "src"
   :components ((:file "package"))
   :description "Functions for installing packages from distro-specific package manager."
