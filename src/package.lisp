@@ -42,8 +42,13 @@
         ((which "sudo") ; because xach complained
          `("sudo" ,(format nil "~{~a ~}" commands)))
         (t
-         (warn "you don't have sudo, right?")
-         (list (format nil "~{~a ~}" commands)))))
+         (warn "you don't have sudo, right? Trying to run it without sudo")
+         ;; Directly executing a program produces a different error,
+         ;; which does not produce subprocess-error which can be captured
+         #+(or)
+         `(,(format nil "~{~a ~}" commands))
+         ;; so we wrap it in a shell process
+         `("sh" "-c" ,(format nil "~{~a ~}" commands)))))
 
 (defun ensure-program (program &rest rest &key apt dnf yum pacman yaourt brew macports fink choco from-source)
   "PROGRAM is a program name to be checked by WHICH command.
