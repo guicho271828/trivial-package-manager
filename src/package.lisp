@@ -122,18 +122,24 @@ Managers are detected simply by `which` command."
       #+(or unix darwin)
       (when (and brew (which "brew"))
         (dolist (str (ensure-list brew))
-          (let ((/ (count #\/ str)))
-            (case /
+          (let ((slashes (count #\/ str)))
+            (case slashes
               (0 (try-return (%run `("brew" "install" ,str))))
-              (1 (error "Invalid number of /'s in the formula specifier! Expecting <user>/<repo>/<formula> "))
+              (1 (error "Invalid number of /'s in the formula specifier!~%~
+                         Data: ~a~%~
+                         Expecting <user>/<repo>/<formula> "
+                        str))
               (t (let* ((pos (position #\/ str))
                         (pos2 (position #\/ str :start (1+ pos)))
                         (pos3 (position #\Space str)))
                    (assert (or (null pos3) (< pos2 pos3))
                            nil
-                           "Found a whitespace before the second / ! Expecting:
+                           "Found a whitespace before the second / !~%~
+                            Data: ~a~%~
+                            Expecting:~%~
   '<user>/<repo>/<formula>' or
-  '<user>/<repo>/<formula> <URL>'")
+  '<user>/<repo>/<formula> <URL>'"
+                           str)
                    (try-return (progn (if pos3
                                           ;; url
                                           (%run `("brew" "tap" ,(subseq str 0 pos2) ,(subseq str (1+ pos3))))
