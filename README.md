@@ -40,38 +40,38 @@ Sophisticated ASDF integration is still on the way, but you can do this, for exa
     
     browse-package (query-string)
     
-    QUERY-STRING is a string. It opens several package search engines on a browser (with trivial-open-browser).
-    URL templates for FORMAT are stored in an exported special variable *SEARCH-ENGINES* .
+      QUERY-STRING is a string. It opens several package search engines on a browser (with trivial-open-browser).
+      URL templates for FORMAT are stored in an exported special variable *SEARCH-ENGINES* .
     
     ensure-program (program &key apt dnf yum pacman yaourt brew macports fink choco from-source)
     ensure-library (library &key apt dnf yum pacman yaourt brew macports fink choco from-source)
     do-install             (&key apt dnf yum pacman yaourt brew macports fink choco from-source)
 
-    PROGRAM is a program name (string) to be checked by `which` command.
-    LIBRARY is a library name (string) to be checked by `pkg-config` command. Includes "lib" i.e. libcurl.
-
-    Each keyword argument specifies the package names to be passed on to the corresponding package manager.
-    The value of each argument can be a string or a list of strings.
-
-    Specified packages are installed when the program/library is missing.
-    DO-INSTALL installs the packages unconditionally.
-    
-    It uses `gksudo` or `sudo` when necessary, and may ask the user of passwords.
-    
-    If none of the package managers are available / when the package is missing (e.g. older distro),
-    FROM-SOURCE argument can specify the shell command for fetching/building/installing the program from
-    the source code. The command is executed in the *default-pathname-defaults*,
-    so care must be taken to bind the appropriate value to the variable.
-
-    Example:
-    
-     (ensure-program "gnome-mines" :apt "gnome-mines")
-     (ensure-program "gnome-mines" :apt '("gnome-mines")) ; both are ok
-     (ensure-library "libcurl" :apt "libcurl4-openssl-dev"
-                               :dnf "curl"
-                               :yum "curl"
-                               :pacman "curl"
-                               :brew "curl")
+      PROGRAM is a program name (string) to be checked by `which` command.
+      LIBRARY is a library name (string) to be checked by `pkg-config` command. Includes "lib" i.e. libcurl.
+  
+      Each keyword argument specifies the package names to be passed on to the corresponding package manager.
+      The value of each argument can be a string or a list of strings.
+  
+      Specified packages are installed when the program/library is missing.
+      DO-INSTALL installs the packages unconditionally.
+      
+      It uses `gksudo` or `sudo` when necessary, and may ask the user of passwords.
+      
+      If none of the package managers are available / when the package is missing (e.g. older distro),
+      FROM-SOURCE argument can specify the shell command for fetching/building/installing the program from
+      the source code. The command is executed in the *default-pathname-defaults*,
+      so care must be taken to bind the appropriate value to the variable.
+  
+      Examples:
+      
+       (ensure-program "gnome-mines" :apt "gnome-mines")
+       (ensure-program "gnome-mines" :apt '("gnome-mines")) ; both are ok
+       (ensure-library "libcurl" :apt "libcurl4-openssl-dev"
+                                 :dnf "curl"
+                                 :yum "curl"
+                                 :pacman "curl"
+                                 :brew "curl")
 
 
 
