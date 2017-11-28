@@ -138,8 +138,8 @@ Managers are detected simply by `which` command."
         (try-return (%run `("choco" "install" ,@(ensure-list choco)))))
       (when from-source
         (try-return (%run `("sh" "-c" ,@(ensure-list from-source)))))
-      (t (error "none of the installation options are available! Supported packaging systems:~%~a"
-                '(:apt :dnf :yum :pacman :yaourt :brew :macports :fink :choco))))))
+      (error "none of the installation options are available! Supported packaging systems:~%~a"
+             '(:apt :dnf :yum :pacman :yaourt :brew :macports :fink :choco)))))
 
 (defvar *search-engines*
   '("http://formulae.brew.sh/search/~a" ; brew
