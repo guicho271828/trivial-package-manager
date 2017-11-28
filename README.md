@@ -56,7 +56,9 @@ Sophisticated ASDF integration is still on the way, but you can do this, for exa
       Specified packages are installed when the program/library is missing.
       DO-INSTALL installs the packages unconditionally.
       
-      It uses `gksudo` or `sudo` when necessary, and may ask the user of passwords.
+      For package managers which require the sudo access,
+      it uses `gksudo` when it is present and DISPLAY variable is set,
+      or `sudo` when it is available and `sudo -v` succeeds.
       
       If none of the package managers are available / when the package is missing (e.g. older distro),
       FROM-SOURCE argument can specify the shell command for fetching/building/installing the program from

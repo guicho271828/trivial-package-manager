@@ -18,30 +18,25 @@
 
 ;; blah blah blah.
 
+(defun %run-p (args)
+  (ignore-errors
+    (progn (uiop:run-program args) t)))
+
 (defun which (name)
-  (zerop
-   (nth-value
-    2
-    (uiop:run-program `("which" ,(string-downcase (string name)))
-                      :ignore-error-status t))))
+  (%run-p `("which" ,(string-downcase (string name)))))
 
 (assert (which "which") nil "This system does not have a 'which' command required by trivial-package-manager.")
 
 (defun pkg-config (name)
   (assert (which "pkg-config") nil "This system does not have a 'pkg-config' command required by trivial-package-manager.")
-  (zerop
-   (nth-value
-    2
-    (uiop:run-program `("pkg-config" ,(string-downcase (string name)))
-                      :ignore-error-status t))))
+  (%run-p `("pkg-config" ,(string-downcase (string name)))))
 
 (defun sudo (commands)
   (cond ((and (which "gksudo") (uiop:getenv "DISPLAY"))
          `("gksudo" ;; "-d" ,(format nil "Installing packages via: ~a" commands)
            ,(format nil "~{~a ~}" commands)))
-        #+(or)
-        ((which "sudo") ; because xach complained
-         `("sudo" ,(format nil "~{~a ~}" commands)))
+        ((and (which "sudo") (%run-p '("sudo" "-v")))
+         `("sudo" "sh" "-c" ,(format nil "~{~a ~}" commands)))
         (t
          (warn "you don't have sudo, right? Trying to run it without sudo")
          ;; Directly executing a program produces a different error,
