@@ -42,7 +42,8 @@
         ((which "sudo") ; because xach complained
          `("sudo" ,(format nil "~{~a ~}" commands)))
         (t
-         (error "you don't have sudo right?"))))
+         (warn "you don't have sudo, right?")
+         (list (format nil "~{~a ~}" commands)))))
 
 (defun ensure-program (program &rest rest &key apt dnf yum pacman yaourt brew macports fink choco from-source)
   "PROGRAM is a program name to be checked by WHICH command.
