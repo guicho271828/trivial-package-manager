@@ -155,6 +155,7 @@ Managers are detected simply by `which` command."
       (when (and choco (which "choco"))
         (try-return (%run `("choco" "install" ,@(ensure-list choco)))))
       (when from-source
+        (warn "Installing from the source file / tarball. Requries the build requisites.")
         (try-return (%run `("sh" "-c" ,@(ensure-list from-source)))))
       (error "none of the installation options are available! Supported packaging systems:~%~a"
              '(:apt :dnf :yum :pacman :yaourt :brew :macports :fink :choco)))))
