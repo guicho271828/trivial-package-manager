@@ -64,6 +64,7 @@ Sophisticated ASDF integration is still on the way, but you can do this, for exa
       FROM-SOURCE argument can specify the shell command for fetching/building/installing the program from
       the source code. The command is executed in the *default-pathname-defaults*,
       so care must be taken to bind the appropriate value to the variable.
+      The command is usually just "make -C <asdf system definition directory>".
   
       Homebrew target can be an unofficial repository installable by brew tap.
       "<user>/<repo>/<formula>" invokes "brew tap <user>/<repo>" then "brew install <user>/<repo>/<formula>".
