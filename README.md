@@ -65,6 +65,10 @@ Sophisticated ASDF integration is still on the way, but you can do this, for exa
       the source code. The command is executed in the *default-pathname-defaults*,
       so care must be taken to bind the appropriate value to the variable.
   
+      Homebrew target can be an unofficial repository installable by brew tap.
+      "<user>/<repo>/<formula>" invokes "brew tap <user>/<repo>" then "brew install <user>/<repo>/<formula>".
+      "<user>/<repo>/<formula> URL" invokes "brew tap <user>/<repo> URL" then "brew install <user>/<repo>/<formula>".
+
       Examples:
       
        (ensure-program "gnome-mines" :apt "gnome-mines")
@@ -74,8 +78,7 @@ Sophisticated ASDF integration is still on the way, but you can do this, for exa
                                  :yum "curl"
                                  :pacman "curl"
                                  :brew "curl")
-
-
+       
 
 ## Dependencies
 This library is at least tested on implementation listed below:

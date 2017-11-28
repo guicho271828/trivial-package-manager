@@ -121,7 +121,24 @@ Managers are detected simply by `which` command."
         (try-return (%run (sudo `("packman" "-S" "--noconfirm" ,@(ensure-list pacman))))))
       #+(or unix darwin)
       (when (and brew (which "brew"))
-        (try-return (%run `("brew" "install" ,@(ensure-list brew)))))
+        (dolist (str (ensure-list brew))
+          (let ((/ (count #\/ str)))
+            (case /
+              (0 (try-return (%run `("brew" "install" ,str))))
+              (1 (error "Invalid number of /'s in the formula specifier! Expecting <user>/<repo>/<formula> "))
+              (t (let* ((pos (position #\/ str))
+                        (pos2 (position #\/ str :start (1+ pos)))
+                        (pos3 (position #\Space str)))
+                   (assert (or (null pos3) (< pos2 pos3))
+                           nil
+                           "Found a whitespace before the second / ! Expecting:
+  '<user>/<repo>/<formula>' or
+  '<user>/<repo>/<formula> <URL>'")
+                   (try-return (progn (if pos3
+                                          ;; url
+                                          (%run `("brew" "tap" ,(subseq str 0 pos2) ,(subseq str (1+ pos3))))
+                                          (%run `("brew" "tap" ,(subseq str 0 pos2))))
+                                      (%run `("brew" "install" ,str))))))))))
       #+(or darwin)
       (when (and macports (which "port"))
         (try-return (%run (sudo `("port" "install" ,@(ensure-list macports))))))
