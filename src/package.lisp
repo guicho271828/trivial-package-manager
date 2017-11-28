@@ -12,7 +12,8 @@
    #:do-install
    #:which
    #:pkg-config
-   #:browse-package))
+   #:browse-package
+   #:*search-engines*))
 (in-package :trivial-package-manager)
 
 ;; blah blah blah.
@@ -140,15 +141,22 @@ Managers are detected simply by `which` command."
       (t (error "none of the installation options are available! Supported packaging systems:~%~a"
                 '(:apt :dnf :yum :pacman :yaourt :brew :macports :fink :choco))))))
 
+(defvar *search-engines*
+  '("http://formulae.brew.sh/search/~a" ; brew
+    "https://packages.ubuntu.com/search?keywords=~a&suite=artful&section=all&searchon=all&arch=any" ;ubuntu
+    "https://packages.debian.org/search?keywords=~a&suite=stable&section=all&searchon=all" ;debian
+    "https://www.archlinux.jp/packages/?name=~a" ;arch
+    "https://admin.fedoraproject.org/pkgdb/packages/%2A~a%2A/" ;fedora
+    "https://pkgs.org/download/~a" ;rpm
+    "https://chocolatey.org/packages?q=~a" ; chocolatey
+    "https://www.macports.org/ports.php?by=name&substr=~a" ; ports
+    "http://pdb.finkproject.org/pdb/browse.php?summary=~a" ; fink
+    ))
+    
 (defun browse-package (query-string)
   "Query-String is a string designator.
 Open several package search engines on a browser"
-  (mapc #'trivial-open-browser:open-browser
-        (list
-         (format nil "http://formulae.brew.sh/search/~a" query-string) ; brew
-         (format nil "https://packages.ubuntu.com/search?keywords=~a&suite=artful&section=all&searchon=all&arch=any" query-string) ;ubuntu
-         (format nil "https://packages.debian.org/search?keywords=~a&suite=stable&section=all&searchon=all" query-string) ;debian
-         (format nil "https://www.archlinux.jp/packages/?name=~a" query-string) ;arch
-         (format nil "https://admin.fedoraproject.org/pkgdb/packages/%2A~a%2A/" query-string) ;fedora
-         (format nil "https://pkgs.org/download/~a" query-string)))) ;rpm
+  (dolist (url *search-engines*)
+    (trivial-open-browser:open-browser
+     (format nil url query-string))))
 

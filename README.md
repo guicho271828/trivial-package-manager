@@ -40,7 +40,8 @@ Sophisticated ASDF integration is still on the way, but you can do this, for exa
     
     browse-package (query-string)
     
-    QUERY-STRING is a string. It opens several package search engines on a browser (with trivial-open-browser)
+    QUERY-STRING is a string. It opens several package search engines on a browser (with trivial-open-browser).
+    URL templates for FORMAT are stored in an exported special variable *SEARCH-ENGINES* .
     
     ensure-program (program &key apt dnf yum pacman yaourt brew macports fink choco from-source)
     ensure-library (library &key apt dnf yum pacman yaourt brew macports fink choco from-source)
