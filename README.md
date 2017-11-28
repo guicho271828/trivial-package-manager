@@ -38,10 +38,13 @@ Sophisticated ASDF integration is still on the way, but you can do this, for exa
 
     Package trivial-package-manager:
     
-    ensure-program (program &key apt dnf yum pacman yaourt brew choco from-source)
-    ensure-library (library &key apt dnf yum pacman yaourt brew choco from-source)
-    do-install             (&key apt dnf yum pacman yaourt brew choco from-source)
     browse-package (query-string)
+    
+    QUERY-STRING is a string. It opens several package search engines on a browser (with trivial-open-browser)
+    
+    ensure-program (program &key apt dnf yum pacman yaourt brew macports fink choco from-source)
+    ensure-library (library &key apt dnf yum pacman yaourt brew macports fink choco from-source)
+    do-install             (&key apt dnf yum pacman yaourt brew macports fink choco from-source)
 
     PROGRAM is a program name (string) to be checked by `which` command.
     LIBRARY is a library name (string) to be checked by `pkg-config` command. Includes "lib" i.e. libcurl.
