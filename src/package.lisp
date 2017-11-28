@@ -38,7 +38,8 @@
   (cond ((and (which "gksudo") (uiop:getenv "DISPLAY"))
          `("gksudo" ;; "-d" ,(format nil "Installing packages via: ~a" commands)
            ,(format nil "~{~a ~}" commands)))
-        ((which "sudo")
+        #+(or)
+        ((which "sudo") ; because xach complained
          `("sudo" ,(format nil "~{~a ~}" commands)))
         (t
          (error "you don't have sudo right?"))))
