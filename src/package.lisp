@@ -35,9 +35,9 @@
 (defun sudo (commands)
   (cond ((and (which "gksudo") (uiop:getenv "DISPLAY"))
          `("gksudo" ;; "-d" ,(format nil "Installing packages via: ~a" commands)
-           ,(format nil "~{~a ~}" commands)))
+           ,(format nil "~{~a~^ ~}" commands)))
         ((and (which "sudo") (%run-p '("sudo" "-v")))
-         `("sudo" "sh" "-c" ,(format nil "~{~a ~}" commands)))
+         `("sudo" "sh" "-c" ,(format nil "~{~a~^ ~}" commands)))
         (t
          (warn "you don't have sudo, right? Trying to run it without sudo")
          ;; Directly executing a program produces a different error,
