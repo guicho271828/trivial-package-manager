@@ -46,7 +46,20 @@
          ;; so we wrap it in a shell process
          `("sh" "-c" ,(format nil "~{~a ~}" commands)))))
 
-(defun ensure-program (program &rest rest &key apt dnf yum pacman yaourt brew macports fink choco from-source)
+(defun call-with-env (env-alist fn)
+  (let ((oldvals (mapcar (lambda (pair)
+                           (destructuring-bind (var . newval) pair
+                             (prog1 (uiop:getenv var)
+                               (setf (uiop:getenv var) newval))))
+                         env-alist)))
+    (unwind-protect
+         (funcall fn)
+      (mapcar (lambda (pair oldval)
+                (setf (uiop:getenv (car pair)) oldval))
+              env-alist
+              oldvals))))
+
+(defun ensure-program (program &rest rest &key apt dnf yum pacman yaourt brew macports fink choco from-source env-alist)
   "PROGRAM is a program name to be checked by WHICH command.
 Each keyword argument specifies the package names to be passed on to the corresponding package manager.
 The value of each argument can be a string or a list of strings.
@@ -62,11 +75,14 @@ Example:
  (ensure-program \"gnome-mines\" :apt '(\"gnome-mines\")) ; both are ok
 "
   (declare (ignorable apt dnf yum pacman yaourt brew macports fink choco from-source))
-  (if (which program)
-      (format t "~&~a is already installed.~%" program)
-      (apply #'do-install rest)))
+  (call-with-env env-alist
+                 (lambda ()
+                   (if (which program)
+                       (format t "~&~a is already installed.~%" program)
+                       (apply #'do-install rest)))))
 
-(defun ensure-library (library &rest rest &key apt dnf yum pacman yaourt brew macports fink choco from-source)
+
+(defun ensure-library (library &rest rest &key apt dnf yum pacman yaourt brew macports fink choco from-source env-alist)
   "Library is a shared library name to be checked by PKG-CONFIG command.
 Each keyword argument specifies the package names to be passed on to the corresponding package manager.
 The value of each argument can be a string or a list of strings.
@@ -82,9 +98,11 @@ Example:
  (ensure-library \"libcurl\" :apt '(\"libcurl4-openssl-dev\")) ; both are ok
 "
   (declare (ignorable apt dnf yum pacman yaourt brew macports fink choco from-source))
-  (if (pkg-config library)
-      (format t "~&~a is already installed.~%" library)
-      (apply #'do-install rest)))
+  (call-with-env env-alist
+                 (lambda ()
+                   (if (pkg-config library)
+                       (format t "~&~a is already installed.~%" library)
+                       (apply #'do-install rest)))))
 
 (defun %run (args)
   "Simple wrapper for run-program, input/error/output are inherited."

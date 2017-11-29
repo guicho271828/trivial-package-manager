@@ -43,8 +43,8 @@ Sophisticated ASDF integration is still on the way, but you can do this, for exa
       QUERY-STRING is a string. It opens several package search engines on a browser (with trivial-open-browser).
       URL templates for FORMAT are stored in an exported special variable *SEARCH-ENGINES* .
     
-    ensure-program (program &key apt dnf yum pacman yaourt brew macports fink choco from-source)
-    ensure-library (library &key apt dnf yum pacman yaourt brew macports fink choco from-source)
+    ensure-program (program &key apt dnf yum pacman yaourt brew macports fink choco from-source env-alist)
+    ensure-library (library &key apt dnf yum pacman yaourt brew macports fink choco from-source env-alist)
     do-install             (&key apt dnf yum pacman yaourt brew macports fink choco from-source)
 
       PROGRAM is a program name (string) to be checked by `which` command.
@@ -55,6 +55,12 @@ Sophisticated ASDF integration is still on the way, but you can do this, for exa
   
       Specified packages are installed when the program/library is missing.
       DO-INSTALL installs the packages unconditionally.
+      
+      ENV-ALIST is an alist of the environment variable/values which are set during the call
+      and restored to the original value by unwind-protect. They are used for e.g.
+
+      * Probing the PROGRAM/LIBRARY compiled through FROM-SOURCE by modifying the PATH and LD_LIBRARY_PATH
+      * Building a PROGRAM from source using another locally compiled LIBRARY.
       
       For package managers which require the sudo access,
       it uses `gksudo` when it is present and DISPLAY variable is set,
