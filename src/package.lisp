@@ -112,10 +112,10 @@ Example:
                     :error-output :interactive
                     :input :interactive))
 
-(defun do-install (&key apt dnf yum pacman yaourt brew macports fink choco from-source)
+(defun do-install (&key apt dnf yum pacman yaourt brew macports fink choco from-source env-alist)
   "Install the specified packages when the corresponding package manager is present in the system.
 Managers are detected simply by `which` command."
-  (declare (ignorable apt dnf yum pacman yaourt brew macports fink choco from-source))
+  (declare (ignorable apt dnf yum pacman yaourt brew macports fink choco from-source env-alist))
   (macrolet ((try-return (&body body)
                `(handler-case (return (progn ,@body))
                   (uiop:subprocess-error (c)
