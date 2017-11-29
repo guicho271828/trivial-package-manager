@@ -5,6 +5,7 @@
 
 (in-package :cl-user)
 (defpackage trivial-package-manager
+  (:nicknames :tpm)
   (:use :cl :alexandria)
   (:export
    #:ensure-program

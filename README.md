@@ -36,7 +36,7 @@ Sophisticated ASDF integration is still on the way, but you can do this, for exa
 
 ## API
 
-    Package trivial-package-manager:
+    Package trivial-package-manager (nicknamed as tpm):
     
     browse-package (query-string)
     
