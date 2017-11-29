@@ -116,8 +116,8 @@ Example:
   "Install the specified packages when the corresponding package manager is present in the system.
 Managers are detected simply by `which` command."
   (declare (ignorable apt dnf yum pacman yaourt brew macports fink choco from-source))
-  (macrolet ((try-return (form)
-               `(handler-case (return ,form)
+  (macrolet ((try-return (&body body)
+               `(handler-case (return (progn ,@body))
                   (uiop:subprocess-error (c)
                     (warn "Command failed with code ~a: ~a"
                           (uiop:subprocess-error-code c)
@@ -125,7 +125,21 @@ Managers are detected simply by `which` command."
     (block nil
       #+unix
       (when (and apt (which "apt-get"))
-        (try-return (%run (sudo `("apt-get" "install" "-y" ,@(ensure-list apt))))))
+        (dolist (str (ensure-list apt))
+          (let ((slashes (count #\/ str)))
+            (case slashes
+              (0 (try-return (%run (sudo `("apt-get" "install" "-y" ,str)))))
+              (2 (let* ((pos (position #\/ str))
+                        (pos2 (position #\/ str :start (1+ pos))))
+                   (try-return 
+                    (%run (sudo `("add-apt-repository" "-y"
+                                  ,(format nil "ppa:~a" (subseq str 0 pos2)))))
+                    (%run (sudo `("apt-get" "update" "-y")))
+                    (%run (sudo `("apt-get" "install" "-y" ,(subseq str (1+ pos2))))))))
+              (t (error "Invalid number of /'s in the package specifier!~%~
+                         Data: ~a~%~
+                         Expecting <apt-repo-user>/<repo>/<package>"
+                        str))))))
       #+unix
       (when (and dnf (which "dnf"))
         (try-return (%run (sudo `("dnf" "install" "-y" ,@(ensure-list dnf))))))
@@ -151,19 +165,18 @@ Managers are detected simply by `which` command."
               (t (let* ((pos (position #\/ str))
                         (pos2 (position #\/ str :start (1+ pos)))
                         (pos3 (position #\Space str)))
-                   (assert (or (null pos3) (< pos2 pos3))
-                           nil
+                   (assert (or (null pos3) (< pos2 pos3)) nil
                            "Found a whitespace before the second / !~%~
                             Data: ~a~%~
                             Expecting:~%~
   '<user>/<repo>/<formula>' or
-  '<user>/<repo>/<formula> <URL>'"
-                           str)
-                   (try-return (progn (if pos3
-                                          ;; url
-                                          (%run `("brew" "tap" ,(subseq str 0 pos2) ,(subseq str (1+ pos3))))
-                                          (%run `("brew" "tap" ,(subseq str 0 pos2))))
-                                      (%run `("brew" "install" ,str))))))))))
+  '<user>/<repo>/<formula> <URL>'" str)
+                   (try-return
+                    (if pos3
+                        ;; url
+                        (%run `("brew" "tap" ,(subseq str 0 pos2) ,(subseq str (1+ pos3))))
+                        (%run `("brew" "tap" ,(subseq str 0 pos2))))
+                    (%run `("brew" "install" ,str)))))))))
       #+(or darwin)
       (when (and macports (which "port"))
         (try-return (%run (sudo `("port" "install" ,@(ensure-list macports))))))
