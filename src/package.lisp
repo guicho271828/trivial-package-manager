@@ -125,21 +125,21 @@ Managers are detected simply by `which` command."
     (block nil
       #+unix
       (when (and apt (which "apt-get"))
-        (dolist (str (ensure-list apt))
-          (let ((slashes (count #\/ str)))
-            (case slashes
-              (0 (try-return (%run (sudo `("apt-get" "install" "-y" ,str)))))
-              (2 (let* ((pos (position #\/ str))
-                        (pos2 (position #\/ str :start (1+ pos))))
-                   (try-return 
+        (try-return
+         (dolist (str (ensure-list apt))
+           (let ((slashes (count #\/ str)))
+             (case slashes
+               (0 (%run (sudo `("apt-get" "install" "-y" ,str))))
+               (2 (let* ((pos (position #\/ str))
+                         (pos2 (position #\/ str :start (1+ pos))))
                     (%run (sudo `("add-apt-repository" "-y"
-                                  ,(format nil "ppa:~a" (subseq str 0 pos2)))))
+                                                       ,(format nil "ppa:~a" (subseq str 0 pos2)))))
                     (%run (sudo `("apt-get" "update" "-y")))
-                    (%run (sudo `("apt-get" "install" "-y" ,(subseq str (1+ pos2))))))))
-              (t (error "Invalid number of /'s in the package specifier!~%~
+                    (%run (sudo `("apt-get" "install" "-y" ,(subseq str (1+ pos2)))))))
+               (t (error "Invalid number of /'s in the package specifier!~%~
                          Data: ~a~%~
                          Expecting <apt-repo-user>/<repo>/<package>"
-                        str))))))
+                         str)))))))
       #+unix
       (when (and dnf (which "dnf"))
         (try-return (%run (sudo `("dnf" "install" "-y" ,@(ensure-list dnf))))))
@@ -154,24 +154,24 @@ Managers are detected simply by `which` command."
         (try-return (%run (sudo `("packman" "-S" "--noconfirm" ,@(ensure-list pacman))))))
       #+(or unix darwin)
       (when (and brew (which "brew"))
-        (dolist (str (ensure-list brew))
-          (let ((slashes (count #\/ str)))
-            (case slashes
-              (0 (try-return (%run `("brew" "install" ,str))))
-              (1 (error "Invalid number of /'s in the formula specifier!~%~
+        (try-return
+         (dolist (str (ensure-list brew))
+           (let ((slashes (count #\/ str)))
+             (case slashes
+               (0 (%run `("brew" "install" ,str)))
+               (1 (error "Invalid number of /'s in the formula specifier!~%~
                          Data: ~a~%~
                          Expecting <user>/<repo>/<formula> "
-                        str))
-              (t (let* ((pos (position #\/ str))
-                        (pos2 (position #\/ str :start (1+ pos)))
-                        (pos3 (position #\Space str)))
-                   (assert (or (null pos3) (< pos2 pos3)) nil
-                           "Found a whitespace before the second / !~%~
+                         str))
+               (t (let* ((pos (position #\/ str))
+                         (pos2 (position #\/ str :start (1+ pos)))
+                         (pos3 (position #\Space str)))
+                    (assert (or (null pos3) (< pos2 pos3)) nil
+                            "Found a whitespace before the second / !~%~
                             Data: ~a~%~
                             Expecting:~%~
   '<user>/<repo>/<formula>' or
   '<user>/<repo>/<formula> <URL>'" str)
-                   (try-return
                     (if pos3
                         ;; url
                         (%run `("brew" "tap" ,(subseq str 0 pos2) ,(subseq str (1+ pos3))))
