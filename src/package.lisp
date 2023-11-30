@@ -151,7 +151,7 @@ Managers are detected simply by `which` command."
         (try-return (%run (sudo `("yaourt" "-S" "--noconfirm" ,@(ensure-list yaourt))))))
       #+unix
       (when (and pacman (which "pacman"))
-        (try-return (%run (sudo `("packman" "-S" "--noconfirm" ,@(ensure-list pacman))))))
+        (try-return (%run (sudo `("pacman" "-S" "--noconfirm" ,@(ensure-list pacman))))))
       #+(or unix darwin)
       (when (and brew (which "brew"))
         (try-return
